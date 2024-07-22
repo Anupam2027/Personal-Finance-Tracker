@@ -19,6 +19,11 @@ const SignUpSignIn = () => {
   const [flag, setFlag] = useState(false);
   const navigate = useNavigate();
 
+  const validateEmail = (email) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(String(email).toLowerCase());
+  };
+
   const createUserDocument = async (user) => {
     setLoading(true);
     if (!user) return;
@@ -50,12 +55,21 @@ const SignUpSignIn = () => {
   const signUpWithEmail = async (e) => {
     setLoading(true);
     e.preventDefault();
+
+    if (!validateEmail(email)) {
+      toast.error("Invalid email format");
+      setLoading(false);
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match");
+      setLoading(false);
+      return;
+    }
+
     try {
-      const result = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+      const result = await createUserWithEmailAndPassword(auth, email, password);
       const user = result.user;
       await createUserDocument(user);
       toast.success("Successfully Signed Up!");
@@ -63,10 +77,7 @@ const SignUpSignIn = () => {
       navigate("/dashboard");
     } catch (error) {
       toast.error(error.message);
-      console.error(
-        "Error signing up with email and password: ",
-        error.message
-      );
+      console.error("Error signing up with email and password: ", error.message);
       setLoading(false);
     }
   };
@@ -74,6 +85,13 @@ const SignUpSignIn = () => {
   const signInWithEmail = async (e) => {
     setLoading(true);
     e.preventDefault();
+
+    if (!validateEmail(email)) {
+      toast.error("Invalid email format");
+      setLoading(false);
+      return;
+    }
+
     try {
       const result = await signInWithEmailAndPassword(auth, email, password);
       const user = result.user;
@@ -82,10 +100,7 @@ const SignUpSignIn = () => {
       setLoading(false);
     } catch (error) {
       toast.error(error.message);
-      console.error(
-        "Error signing in with email and password: ",
-        error.message
-      );
+      console.error("Error signing in with email and password: ", error.message);
       setLoading(false);
     }
   };
