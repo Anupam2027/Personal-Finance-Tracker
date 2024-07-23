@@ -1,1 +1,1 @@
-personalfinancetracker01.vercel.app
+https://personalfinancetracker01.vercel.app/
